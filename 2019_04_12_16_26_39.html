@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph</title>
+
+</head>
+<body>
+<canvas id="myCanvas" width="1030" height="700" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+<script type="text/javascript">
+        var dots = [["16:26:34",33],["16:26:35",31],["16:26:35",23],["16:26:36",40],["16:26:36",64],["16:26:37",70],["16:26:37",45],["16:26:38",33],["16:26:38",28],["16:26:39",27],];
+        <!--var dots = ['33', '22', '63', '39', '35', '25', '25', '28', '47', '35', '38', '28', '31', '25', '60', '38', '30', '61', '53', '34', '31','43', '33', '43', '31', '30', '25', '26', '20' ];-->
+        var c=document.getElementById("myCanvas");
+        var cxt=c.getContext("2d");
+        for(var i=0; i<10; i++){
+            var h = parseInt(600/10);
+            cxt.moveTo(10,700-(i*60+100));
+            cxt.font="12px Arial";
+            cxt.fillText(String(i*10),10,700-(i*60+100));
+        }
+        for(var i=0; i<dots.length; i++){
+            var w = parseInt(1000/dots.length);
+            cxt.font="10px Arial"
+            cxt.moveTo(10+i*w,620);
+            cxt.fillText(dots[i][0],10+i*w,620);
+        }
+        cxt.beginPath();
+        cxt.lineWidth=2;
+        cxt.moveTo(30,600);
+        cxt.lineTo(1030,600);
+        cxt.moveTo(30,0);
+        cxt.lineTo(30,600);
+        cxt.stroke();
+
+
+        cxt.beginPath();
+        cxt.lineWidth=1;
+        cxt.moveTo(30,600);
+        var gap = parseInt(1000/dots.length);
+        for(var i=0; i<dots.length; i++){
+            var y = 600-parseInt(dots[i][1])*6;
+            var x = i*gap+30;
+            cxt.lineTo(x, y);
+        }
+        cxt.stroke();
+
+
+        var gap = parseInt(1000/dots.length);
+        for(var i=0; i<dots.length; i++){
+            cxt.beginPath();
+            var y = 600-parseInt(dots[i][1])*6;
+            var x = i*gap+30;
+            cxt.arc( x, y, 3, 0, Math.PI*2 );
+            cxt.fill();
+            cxt.closePath();
+        }
+
+
+    </script>
+</body>
+</html>

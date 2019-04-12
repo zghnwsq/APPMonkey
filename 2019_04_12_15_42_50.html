@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Graph</title>
+
+</head>
+<body>
+<canvas id="myCanvas" width="1000" height="600" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+<script type="text/javascript">
+        var dots = [33,22,63,39,35,25,25,28,47,35,38,28,31,25,60,38,30,61,53,34,31,43,33,43,31,30,25,26,20,];
+        var c=document.getElementById("myCanvas");
+        var cxt=c.getContext("2d");
+        cxt.beginPath();
+        cxt.lineWidth=2;
+        cxt.moveTo(0,600);
+        cxt.lineTo(1000,600);
+        cxt.moveTo(0,0);
+        cxt.lineTo(0,600);
+        cxt.stroke();
+
+
+        cxt.beginPath();
+        cxt.lineWidth=1;
+        cxt.moveTo(0,600);
+        var gap = parseInt(1000/dots.length);
+        for(var i=0; i<dots.length; i++){
+            var y = 600-parseInt(dots[i]);
+            var x = i*gap;
+            cxt.lineTo(x, y);
+        }
+        cxt.stroke();
+
+    </script>
+</body>
+</html>

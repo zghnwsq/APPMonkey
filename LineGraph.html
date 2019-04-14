@@ -6,38 +6,58 @@
 
 </head>
 <body>
+<div style="text-align:center; font-size: 20px; margin:20px;">CPU Trend</div>
 <canvas id="myCanvas" width="100%" height="700" style="border:1px solid #c3c3c3;">
 Your browser does not support the canvas element.
 </canvas>
+<div style="text-align:center; font-size: 20px; margin:20px;">APP Memory Cost Trend</div>
+<canvas id="amem" width="100%" height="700" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
 <script type="text/javascript">
-        var dots = [%data];
-        <!--var dots = ['33', '22', '63', '39', '35', '25', '25', '28', '47', '35', '38', '28', '31', '25', '60', '38', '30', '61', '53', '34', '31','43', '33', '43', '31', '30', '25', '26', '20' ];-->
+        var cpu = [%cpu%];
+        var acpu = [%acpu%];
         var wwidth = window.innerWidth-50;
         document.getElementById("myCanvas").width=window.innerWidth;
         var c=document.getElementById("myCanvas");
         var ctx=c.getContext("2d");
-        <!--x mark-->
+        <!--y mark-->
         for(var i=0; i<10; i++){
             var h = parseInt(600/10);
             ctx.moveTo(10,700-(i*60+100));
             ctx.font="12px Arial";
             ctx.fillText(String(i*10),10,700-(i*60+100));
         }
-        <!--y mark-->
-        ctx.translate(3,620);
-        var w = parseInt((wwidth-30)/dots.length);
-        for(var i=0; i<dots.length; i++){
+        <!--x mark-->
+        ctx.translate(25,620);
+        var w = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
             ctx.font="10px Arial"
-            ctx.translate(w,0);
             ctx.rotate(90*Math.PI/180);
-            ctx.fillText(dots[i][0],0,0);
+            ctx.fillText(cpu[i][0],0,0);
             ctx.rotate(-90*Math.PI/180);
+            ctx.translate(w,0);
         }
-        ctx.translate(-dots.length*w,-620);
+        ctx.translate(-cpu.length*w-25,-620);
         <!--Title-->
-        ctx.font="20px Arial"
-        ctx.fillText('Cpu Trend',parseInt(wwidth-30)/2,30);
+        <!--ctx.font="20px Arial"-->
+        <!--ctx.fillText('Cpu Trend',parseInt((wwidth-30)/2),30);-->
+        <!--Index-->
+        ctx.font="12px Arial"
+        ctx.fillText('TOTAL(%)',parseInt((wwidth-30)/2)+500,20);
+        ctx.fillText('APP(%)',parseInt((wwidth-30)/2)+500,40);
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        ctx.moveTo(parseInt((wwidth-30)/2)+450,15);
+        ctx.lineTo(parseInt((wwidth-30)/2)+490,15);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
+        ctx.moveTo(parseInt((wwidth-30)/2)+450,35);
+        ctx.lineTo(parseInt((wwidth-30)/2)+490,35);
+        ctx.stroke();
         <!--x y-->
+        ctx.strokeStyle = "#000000";
         ctx.beginPath();
         ctx.lineWidth=2;
         ctx.moveTo(30,600);
@@ -46,38 +66,160 @@ Your browser does not support the canvas element.
         ctx.lineTo(30,600);
         ctx.stroke();
 
-        <!--line-->
+        <!--cpu line-->
         ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
         ctx.lineWidth=1;
-        ctx.moveTo(30,600);
-        var gap = parseInt((wwidth-30)/dots.length);
-        for(var i=0; i<dots.length; i++){
-            var y = 600-parseInt(dots[i][1])*6;
+        <!--ctx.moveTo(30,600);-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            var y = 600-parseInt(cpu[i][1])*6;
             var x = i*gap+30;
-            ctx.lineTo(x, y);
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
         }
         ctx.stroke();
-        <!--dots-->
-        var gap = parseInt((wwidth-30)/dots.length);
-        for(var i=0; i<dots.length; i++){
+        <!--acpu line-->
+        ctx.beginPath();
+        ctx.lineWidth=1;
+        ctx.strokeStyle = "#0000FF";
+        <!--ctx.moveTo(30,600);-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<acpu.length; i++){
+            var y = 600-parseInt(acpu[i][1])*6;
+            var x = i*gap+30;
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
+        }
+        ctx.stroke();
+        <!--cpu dots-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
             ctx.beginPath();
-            var y = 600-parseInt(dots[i][1])*6;
+            var y = 600-parseInt(cpu[i][1])*6;
             var x = i*gap+30;
             ctx.arc( x, y, 3, 0, Math.PI*2 );
             ctx.fill();
             ctx.closePath();
         }
-        <!--values-->
-        var gap = parseInt((wwidth-30)/dots.length);
-        for(var i=0; i<dots.length; i++){
-            var y = 600-parseInt(dots[i][1])*6;
+        <!--acpu dots-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.beginPath();
+            var y = 600-parseInt(acpu[i][1])*6;
+            var x = i*gap+30;
+            ctx.arc( x, y, 3, 0, Math.PI*2 );
+            ctx.fill();
+            ctx.closePath();
+        }
+        <!--cpu values-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            var y = 600-parseInt(cpu[i][1])*6;
             var x = i*gap+30;
             ctx.font="10px Arial";
             ctx.fillStyle="#FF0000";
-            ctx.fillText(dots[i][1]+'%',x,y-10);
+            ctx.fillText(cpu[i][1]+'%',x,y-5);
         }
+        <!--acpu values-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<acpu.length; i++){
+            var y = 600-parseInt(acpu[i][1])*6;
+            var x = i*gap+30;
+            ctx.font="10px Arial";
+            ctx.fillStyle="#0000FF";
+            ctx.fillText(acpu[i][1]+'%',x,y-5);
+        }
+</script>
+<script type="text/javascript">
+        var amem = [%amem%];
+        var mem = %mem%;
+        var wwidth = window.innerWidth-50;
+        document.getElementById("amem").width=window.innerWidth;
+        var c=document.getElementById("amem");
+        var ctx=c.getContext("2d");
+        <!--y mark-->
+        for(var i=0; i<10; i++){
+            var h = parseInt(600/10);
+            ctx.moveTo(10,700-(i*60+100));
+            ctx.font="12px Arial";
+            ctx.fillText(String(i*10),10,700-(i*60+100));
+        }
+        <!--x mark-->
+        ctx.translate(25,620);
+        var w = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.font="10px Arial"
+            ctx.rotate(90*Math.PI/180);
+            ctx.fillText(cpu[i][0],0,0);
+            ctx.rotate(-90*Math.PI/180);
+            ctx.translate(w,0);
+        }
+        ctx.translate(-cpu.length*w-25,-620);
+        <!--Index-->
+        ctx.font="12px Arial"
+        ctx.fillText('APP(%)',parseInt((wwidth-30)/2)+500,40);
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
+        ctx.moveTo(parseInt((wwidth-30)/2)+450,35);
+        ctx.lineTo(parseInt((wwidth-30)/2)+490,35);
+        ctx.stroke();
+        <!--x y-->
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.lineWidth=2;
+        ctx.moveTo(30,600);
+        ctx.lineTo(wwidth,600);
+        ctx.moveTo(30,0);
+        ctx.lineTo(30,600);
+        ctx.stroke();
 
-
-    </script>
+        <!--amem line-->
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        ctx.lineWidth=1;
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            var y = 600-parseInt(pct)*6;
+            var x = i*gap+30;
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
+        }
+        ctx.stroke();
+        <!--amem dots-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            ctx.beginPath();
+            var y = 600-parseInt(pct)*6;
+            var x = i*gap+30;
+            ctx.arc( x, y, 3, 0, Math.PI*2 );
+            ctx.fill();
+            ctx.closePath();
+        }
+        <!--amem values-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            var y = 600-parseInt(pct)*6;
+            var x = i*gap+30;
+            ctx.font="10px Arial";
+            ctx.fillStyle="#FF0000";
+            ctx.fillText(pct.toFixed(2)+'%',x,y-5);
+        }
+</script>
 </body>
 </html>

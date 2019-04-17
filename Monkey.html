@@ -21,7 +21,7 @@
     var back = "";
     var getCpu = [];
     var it = 0;
-    var cpu = "";
+    var cpu = [];
     var acpu = [];
     window.onload = function(){
         <!--drawCpu(cpu, acpu);-->
@@ -55,8 +55,6 @@
         var tmp = pkg + sed + t + v + times
         window.share.Run(tmp);
     }
-
-
 
     </script>
 </head>
@@ -129,7 +127,7 @@
 		}]
     });
 
-        function GetCpu(){
+    function GetCpu(){
         var cc = "";
         window.share.Cpu(function(res){
             cc = res;
@@ -149,8 +147,8 @@
 
     function updateCpu(cc){
         cpu.push(parseInt(cc));
-        alert(cpu);
-        charts.series[0].update({data:cc});
+        <!--alert(cpu);-->
+        chart.series[0].update({data:cpu});
     }
 </script>
 </body>

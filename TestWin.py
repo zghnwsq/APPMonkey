@@ -56,12 +56,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         self.value = ''
         super(QMainWindow, self).__init__()
-        self.setWindowTitle("打开网页例子")
+        self.setWindowTitle("APPMonkey")
         #  相当于初始化这个加载web的控件
         self.view = QWebEngineView(self)
         #  加载外部页面，调用
-        url = QFileInfo("./monkey.html").absoluteFilePath()
-        self.view.load(QUrl(url))
+        url = QFileInfo('./Monkey.html').absoluteFilePath()
+        print(url)
+        self.view.load(QUrl('file:///'+url))
         self.setCentralWidget(self.view)
         self.resize(800, 600)
 

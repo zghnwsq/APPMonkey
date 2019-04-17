@@ -26,11 +26,14 @@ class MyThread(threading.Thread):
 
         p2 = os.popen('adb shell dumpsys meminfo|grep  -e calculator -e "Total RAM"')
         a2 = p2.readline().strip().split()
-        self.amem = a2[0].replace(',', '').replace('K:', '')
-        p2.readline()
-        b2 = p2.readline().strip().split()[2].replace(',', '').replace('K', '')
-        self.mem = int(b2)
-        print(self.amem)
+        try:
+            self.amem = a2[0].replace(',', '').replace('K:', '')
+            p2.readline()
+            b2 = p2.readline().strip().split()[2].replace(',', '').replace('K', '')
+            self.mem = int(b2)
+            print(self.amem)
+        except Exception as e:
+            pass
 
         p1 = os.popen('adb shell dumpsys cpuinfo |grep  calculator')
         a1 = p1.read().strip()

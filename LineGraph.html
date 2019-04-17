@@ -214,11 +214,13 @@ Your browser does not support the canvas element.
         var gap = parseInt((wwidth-30)/cpu.length);
         for(var i=0; i<amem.length; i++){
             var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            var mb = amem[i][1]/1024
             var y = 600-parseInt(pct)*6;
             var x = i*gap+30;
             ctx.font="10px Arial";
             ctx.fillStyle="#FF0000";
-            ctx.fillText(pct.toFixed(2)+'%',x,y-5);
+            ctx.fillText(pct.toFixed(2)+'%',x,y-15);
+            ctx.fillText(mb.toFixed(2)+'MB', x, y-5);
         }
 </script>
 </body>

@@ -30,12 +30,15 @@ class MyThread(threading.Thread):
         p2.readline()
         b2 = p2.readline().strip().split()[2].replace(',', '').replace('K', '')
         self.mem = int(b2)
-
         print(self.amem)
+
         p1 = os.popen('adb shell dumpsys cpuinfo |grep  calculator')
         a1 = p1.read().strip()
         b1 = a1.split(' ')[0]
-        self.acpu = float(b1.strip().replace('%', ''))
+        try:
+            self.acpu = float(b1.strip().replace('%', ''))
+        except Exception as e:
+            pass
         print(self.acpu)
 
     def get_cpu(self):
@@ -53,6 +56,8 @@ class MyThread(threading.Thread):
 
 if __name__ == '__main__':
     t0 = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+    #  adb shell settings put global policy_control immersive.full=* 关闭手机的状态栏
+    #  adb shell settings put global policy_control null 开启手机状态栏
     p = subprocess.Popen('adb shell monkey '
                          '-p com.miui.calculator '
                          '-v -v -v '
@@ -61,8 +66,8 @@ if __name__ == '__main__':
                          '--pct-appswitch 0 '
                          '--throttle 100 '
                          '-s 25 '
-                         '1>./' + t0 + '_info.txt '
-                         '2>./' + t0 + '_error.txt '
+                         '1>./report/' + t0 + '_info.txt '
+                         '2>./report/' + t0 + '_error.txt '
                          '5000',
                          shell=True)
     cpu = []
@@ -83,11 +88,11 @@ if __name__ == '__main__':
         acpu.append([t, thd.get_acpu()])
         amem.append([t, thd.get_amem()])
         mem = thd.get_mem()
-        time.sleep(1)
-    print(cpu)
-    print(acpu)
-    print(amem)
-    print(mem)
+        # time.sleep(1)
+    # print(cpu)
+    # print(acpu)
+    # print(amem)
+    # print(mem)
     html = open('./LineGraph.html', mode='r', encoding='utf-8').read()
     cpu_data = ''
     for i in cpu:
@@ -106,7 +111,7 @@ if __name__ == '__main__':
     html = html.replace('%amem%', amem_data)
     html = html.replace('%mem%', str(mem))
     t = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
-    f = open('./' + t + '.html', mode='w', encoding='utf-8')
+    f = open('./report/' + t + '.html', mode='w', encoding='utf-8')
     f.write(html)
     f.close()
 

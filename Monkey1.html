@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Monkey</title>
+    <style type="text/css">
+        #input {
+            margin: 20px;
+            width:80%;
+        }
+        .row {
+            margin: 10px;
+        }
+
+    </style>
+    <script type="text/javascript" src="./qwebchannel.js"></script>
+    <script>
+    var back = "";
+    var getCpu = [];
+    var it = 0;
+    var cpu = [];
+    var acpu = [];
+    window.onload = function(){
+        <!--drawCpu(cpu, acpu);-->
+        new QWebChannel(qt.webChannelTransport, function(channel){
+            window.share = channel.objects.share;
+        });
+    };
+    function WebToQt() {
+        var name = document.getElementById("username").value;
+        window.share.WebToQt(name);
+    }
+    function QtToWeb(){
+        window.share.QtToWeb(function(res){
+            back = res;
+            return res;
+        });
+        setTimeout(update, 1000);
+    }
+    function update(){
+        document.getElementById("back").value = back;
+    }
+    function run(){
+        var pkg = " -p " + document.getElementById("package").value
+        var sed = " -s " + document.getElementById("seed").value
+        var t = " --throttle " + document.getElementById("throttle").value
+        var v = " " + document.getElementById("v").value
+        var touch = " --pct-touch " + document.getElementById("touch").value
+        var syskeys = " --pct-syskeys " + document.getElementById("syskeys").value
+        var appswitch = " --pct-appswitch " + document.getElementById("appswitch").value
+        var times = " " + document.getElementById("times").value
+        var tmp = pkg + sed + t + v + times
+        window.share.Run(tmp);
+    }
+    function GetCpu(){
+        var cc = [];
+        window.share.Cpu(function(res){
+            cc = res;
+            updateCpu(cc);
+        });
+    }
+    function updateCpu(cc){
+        cpu.push(cc);
+        var x = window.innerWidth-50;
+        clear(x);
+        drawCpu(cpu, acpu);
+    }
+    function stopIt(){
+        setTimeout(function(){clearInterval(it);}, 1000);
+    }
+    function monitor(){
+        it = setInterval(function(){GetCpu()}, 5000);
+        <!--setTimeout(stopIt, 20000);-->
+    }
+
+
+    </script>
+</head>
+<body>
+<div id="input">
+    <div class="row">
+        <span>包名: <input type="text" id="package" value="com.miui.calculator"></span>
+        <span>seed: <input type="text" id="seed" value="23"></span>
+    </div>
+    <div class="row">
+        <span>延迟: <input type="text" id="throttle" value="150"></span>
+        <span>日志: <input type="text" id="v" value="-v -v -v"></span>
+    </div>
+    <div class="row">
+        <span>--pct-touch: <input type="text" id="touch" value="30"></span>
+        <span>--pct-syskeys: <input type="text" id="syskeys" value="0"></span>
+
+    </div>
+    <div class="row">
+        <span>--pct-appswitch: <input type="text" id="appswitch" value="0"></span>
+        <span>次数: <input type="text" id="times" value="1000"></span>
+
+    </div>
+    <div class="row">
+        <button onclick="run();">运行</button>
+        <button onclick="monitor();">监控</button>
+        <button onclick="stopIt();">停止监控</button>
+    </div>
+</div>
+
+
+<div style="text-align:center; font-size: 20px; margin:20px;">CPU Trend</div>
+<canvas id="myCanvas" width="100%" height="400" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+<div style="text-align:center; font-size: 20px; margin:20px;">APP Memory Cost Trend</div>
+<canvas id="amem" width="100%" height="400" style="border:1px solid #c3c3c3;">
+Your browser does not support the canvas element.
+</canvas>
+<script type="text/javascript">
+    var wwidth = window.innerWidth-50;
+    document.getElementById("myCanvas").width=wwidth;
+    function clear(x){
+        var canvas=document.getElementById('myCanvas');
+        var ctx=canvas.getContext('2d');
+        ctx.clearRect(0,0,x,400);
+    }
+    function drawCpu(cpu, acpu){
+        var wwidth = window.innerWidth-50;
+        var c=document.getElementById("myCanvas");
+        var ctx=c.getContext("2d");
+        var h = parseInt(300/100);
+        <!--y mark-->
+        for(var i=0; i<10; i++){
+            <!--var h = parseInt(300/10);-->
+            ctx.moveTo(10,400-(i*h*10+100));
+            ctx.font="10px Arial";
+            ctx.fillText(String(i*10),10,400-(i*h*10+100));
+        }
+        <!--x mark-->
+        ctx.translate(25,320);
+        var w = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.font="8px Arial"
+            ctx.rotate(90*Math.PI/180);
+            ctx.fillText(cpu[i][0],0,0);
+            ctx.rotate(-90*Math.PI/180);
+            ctx.translate(w,0);
+        }
+        ctx.translate(-cpu.length*w-25,-320);
+        <!--Title-->
+        <!--ctx.font="20px Arial"-->
+        <!--ctx.fillText('Cpu Trend',parseInt((wwidth-30)/2),30);-->
+        <!--Index-->
+        ctx.font="12px Arial"
+        ctx.fillText('TOTAL(%)',parseInt((wwidth-30)/2)+300,20);
+        ctx.fillText('APP(%)',parseInt((wwidth-30)/2)+300,40);
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        ctx.moveTo(parseInt((wwidth-30)/2)+250,15);
+        ctx.lineTo(parseInt((wwidth-30)/2)+290,15);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
+        ctx.moveTo(parseInt((wwidth-30)/2)+250,35);
+        ctx.lineTo(parseInt((wwidth-30)/2)+290,35);
+        ctx.stroke();
+        <!--x y-->
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.lineWidth=2;
+        ctx.moveTo(30,300);
+        ctx.lineTo(wwidth,300);
+        ctx.moveTo(30,0);
+        ctx.lineTo(30,300);
+        ctx.stroke();
+
+        <!--cpu line-->
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        ctx.lineWidth=1;
+        <!--ctx.moveTo(30,300);-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            var y = 300-parseInt(cpu[i][1])*h;
+            var x = i*gap+30;
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
+        }
+        ctx.stroke();
+        <!--acpu line-->
+        ctx.beginPath();
+        ctx.lineWidth=1;
+        ctx.strokeStyle = "#0000FF";
+        <!--ctx.moveTo(30,300);-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<acpu.length; i++){
+            var y = 300-parseInt(acpu[i][1])*h;
+            var x = i*gap+30;
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
+        }
+        ctx.stroke();
+        <!--cpu dots-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.beginPath();
+            var y = 300-parseInt(cpu[i][1])*h;
+            var x = i*gap+30;
+            ctx.arc( x, y, 3, 0, Math.PI*2 );
+            ctx.fill();
+            ctx.closePath();
+        }
+        <!--acpu dots-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.beginPath();
+            var y = 300-parseInt(acpu[i][1])*h;
+            var x = i*gap+30;
+            ctx.arc( x, y, 3, 0, Math.PI*2 );
+            ctx.fill();
+            ctx.closePath();
+        }
+        <!--cpu values-->
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<cpu.length; i++){
+            var y = 300-parseInt(cpu[i][1])*h;
+            var x = i*gap+30;
+            ctx.font="10px Arial";
+            ctx.fillStyle="#FF0000";
+            ctx.fillText(cpu[i][1]+'%',x,y-5);
+        }
+        <!--acpu values-->
+        var gap = parseInt((wwidth-30)/acpu.length);
+        for(var i=0; i<acpu.length; i++){
+            var y = 300-parseInt(acpu[i][1])*h;
+            var x = i*gap+30;
+            ctx.font="10px Arial";
+            ctx.fillStyle="#0000FF";
+            ctx.fillText(acpu[i][1]+'%',x,y-5);
+        }
+    }
+</script>
+<script type="text/javascript">
+        var amem = [0];
+        var mem = 0;
+        var wwidth = window.innerWidth-50;
+        document.getElementById("amem").width=wwidth;
+        var c=document.getElementById("amem");
+        var ctx=c.getContext("2d");
+        var h = parseInt(300/100);
+        <!--y mark-->
+        for(var i=0; i<10; i++){
+            <!--var h = parseInt(600/10);-->
+            ctx.moveTo(10,400-(i*h*10+100));
+            ctx.font="12px Arial";
+            ctx.fillText(String(i*10),10,400-(i*h*10+100));
+        }
+        <!--x mark-->
+        ctx.translate(25,320);
+        var w = parseInt((wwidth-30)/amem.length);
+        for(var i=0; i<cpu.length; i++){
+            ctx.font="10px Arial"
+            ctx.rotate(90*Math.PI/180);
+            ctx.fillText(cpu[i][0],0,0);
+            ctx.rotate(-90*Math.PI/180);
+            ctx.translate(w,0);
+        }
+        ctx.translate(-cpu.length*w-25,-320);
+        <!--Index-->
+        ctx.font="12px Arial"
+        ctx.fillText('APP(%)',parseInt((wwidth-30)/2)+300,40);
+        ctx.beginPath();
+        ctx.strokeStyle = "#0000FF";
+        ctx.moveTo(parseInt((wwidth-30)/2)+250,35);
+        ctx.lineTo(parseInt((wwidth-30)/2)+290,35);
+        ctx.stroke();
+        <!--x y-->
+        ctx.strokeStyle = "#000000";
+        ctx.beginPath();
+        ctx.lineWidth=2;
+        ctx.moveTo(30,300);
+        ctx.lineTo(wwidth,300);
+        ctx.moveTo(30,0);
+        ctx.lineTo(30,300);
+        ctx.stroke();
+
+        <!--amem line-->
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        ctx.lineWidth=1;
+        var gap = parseInt((wwidth-30)/cpu.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            var y = 300-parseInt(pct)*h;
+            var x = i*gap+30;
+            if(i==0){
+                ctx.moveTo(x,y);
+                }
+            else{
+                ctx.lineTo(x, y);
+                }
+        }
+        ctx.stroke();
+        <!--amem dots-->
+        var gap = parseInt((wwidth-30)/amem.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            ctx.beginPath();
+            var y = 300-parseInt(pct)*h;
+            var x = i*gap+30;
+            ctx.arc( x, y, 3, 0, Math.PI*2 );
+            ctx.fill();
+            ctx.closePath();
+        }
+        <!--amem values-->
+        var gap = parseInt((wwidth-30)/amem.length);
+        for(var i=0; i<amem.length; i++){
+            var pct = (parseInt(amem[i][1])/parseInt(mem)*100)
+            var mb = amem[i][1]/1024
+            var y = 300-parseInt(pct)*h;
+            var x = i*gap+30;
+            ctx.font="10px Arial";
+            ctx.fillStyle="#FF0000";
+            ctx.fillText(pct.toFixed(2)+'%',x,y-15);
+            ctx.fillText(mb.toFixed(2)+'MB', x, y-5);
+        }
+</script>
+<!--<input name="username" type="text" id="username" value="">-->
+<!--<button onclick="WebToQt();">ToQt</button>-->
+<!--<input id="back" value="">-->
+<!--<button onclick="QtToWeb();">ToWeb</button>-->
+</body>
+</html>

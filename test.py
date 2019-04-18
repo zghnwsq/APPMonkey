@@ -2,7 +2,7 @@
 # 'com.miui.calculator'
 
 import os, subprocess
-
+# from TestWin import GetStat
 # if not os.system('adb shell monkey '
 #                  '-p com.miui.calculator '
 #                  '-v -v -v '
@@ -26,13 +26,13 @@ import os, subprocess
 # system = b[1].strip().split(' ')[1].replace('%', '')
 # print(float(user)+float(system))
 
-p = os.popen('adb shell dumpsys meminfo|grep  -e calculator -e "Total RAM"')
-a = p.readline().strip().split()
-# print(a[0].replace(',', '').replace('K:', ''))
-amem = a[0].replace(',', '').replace('K:', '')
-p.readline()
-t = p.readline().strip().split()[2].replace(',', '').replace('K', '')
-print(t)
+# p = os.popen('adb shell dumpsys meminfo|grep  -e calculator -e "Total RAM"')
+# a = p.readline().strip().split()
+# # print(a[0].replace(',', '').replace('K:', ''))
+# amem = a[0].replace(',', '').replace('K:', '')
+# p.readline()
+# t = p.readline().strip().split()[2].replace(',', '').replace('K', '')
+# print(t)
 # print(a.split(' ')[5].replace('K:', '').replace(',', ''))
 
 # p1 = os.popen('adb shell dumpsys cpuinfo |grep  calculator')
@@ -47,6 +47,8 @@ print(t)
 # print(b2)
 # print(b2.strip().replace('K:', '').replace(',', ''))
 
+# g = GetStat()
+# g.run()
 
 
 

@@ -4,152 +4,68 @@
     <meta charset="UTF-8">
     <title>Monkey</title>
     <style type="text/css">
-        #input {
-            margin: 20px;
-            width:80%;
+        table#input {
+            width:50%;
+            margin-left: 20%;
         }
-        .row {
-            margin: 10px;
+        tr.row {
+            width:100%;
+            margin:10px;
         }
-
+        .row td{
+           width:30%;
+        }
+        div.button {
+            width:50%;
+            margin-left: 60%;
+        }
+        button{
+            margin-left: 20px;
+        }
+        #other {
+            height: 1em;
+            width: 100%;
+        }
     </style>
     <script type="text/javascript" src="./qwebchannel.js"></script>
     <script src="https://img.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script src="https://img.highcharts.com.cn/highcharts/modules/exporting.js"></script>
     <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
-    <script>
-    var back = "";
-    var getCpu = [];
-    var it = 0;
-    var cpu = [];
-    var acpu = [];
-    window.onload = function(){
-        <!--drawCpu(cpu, acpu);-->
-        new QWebChannel(qt.webChannelTransport, function(channel){
-            window.share = channel.objects.share;
-        });
-    };
-    function WebToQt() {
-        var name = document.getElementById("username").value;
-        window.share.WebToQt(name);
-    }
-    function QtToWeb(){
-        window.share.QtToWeb(function(res){
-            back = res;
-            return res;
-        });
-        setTimeout(update, 1000);
-    }
-    function update(){
-        document.getElementById("back").value = back;
-    }
-    function run(){
-        var pkg = " -p " + document.getElementById("package").value
-        var sed = " -s " + document.getElementById("seed").value
-        var t = " --throttle " + document.getElementById("throttle").value
-        var v = " " + document.getElementById("v").value
-        var touch = " --pct-touch " + document.getElementById("touch").value
-        var syskeys = " --pct-syskeys " + document.getElementById("syskeys").value
-        var appswitch = " --pct-appswitch " + document.getElementById("appswitch").value
-        var times = " " + document.getElementById("times").value
-        var tmp = pkg + sed + t + v + times
-        window.share.Run(tmp);
-    }
-
-    </script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 <body>
-<div id="input">
-    <div class="row">
-        <span>包名: <input type="text" id="package" value="com.miui.calculator"></span>
-        <span>seed: <input type="text" id="seed" value="23"></span>
-    </div>
-    <div class="row">
-        <span>延迟: <input type="text" id="throttle" value="150"></span>
-        <span>日志: <input type="text" id="v" value="-v -v -v"></span>
-    </div>
-    <div class="row">
-        <span>--pct-touch: <input type="text" id="touch" value="30"></span>
-        <span>--pct-syskeys: <input type="text" id="syskeys" value="0"></span>
-
-    </div>
-    <div class="row">
-        <span>--pct-appswitch: <input type="text" id="appswitch" value="0"></span>
-        <span>次数: <input type="text" id="times" value="1000"></span>
-
-    </div>
-    <div class="row">
-        <button onclick="run();">运行</button>
-        <button onclick="monitor();">监控</button>
-        <button onclick="stopIt();">停止监控</button>
-    </div>
+<h3 style="text-align: center;">APP Monkey</h3>
+<table id="input">
+    <tbody>
+    <tr class="row">
+        <td><span>包 名: </span><input type="text" id="package" value="com.miui.calculator"></td>
+        <td><span>seed: </span><input type="text" id="seed" value="23"></td>
+    </tr>
+    <tr class="row">
+        <td><span>延 迟: </span><input type="text" id="throttle" value="150"></td>
+        <td><span>日 志: </span><input type="text" id="v" value="-v -v -v"></td>
+    </tr>
+    <tr class="row">
+        <td><span>touch: </span><input type="text" id="touch" value="30"></td>
+        <td><span>syskeys: </span><input type="text" id="syskeys" value="0"></td>
+    </tr>
+    <tr class="row">
+        <td><span>appswitch: </span><input type="text" id="appswitch" value="0"></td>
+    </tr>
+    <tr class="row">
+        <td><span>次 数: </span><input type="text" id="times" value="1000"></td>
+    </tr>
+    <tr>
+        <td><span>其 它: </span><textarea id="other"></textarea></td>
+    </tr>
+    </tbody>
+</table>
+<div class="button">
+    <button onclick="run();">运行</button>
+    <button onclick="monitor();">监控</button>
+    <button onclick="stopIt();">停止监控</button>
 </div>
-
-
-<div id="container" style="min-width:600px;height:400px"></div>
-<script type="text/javascript">
-    Highcharts.setOptions({
-		global: {
-				useUTC: false
-		}
-    });
-
-    var chart = Highcharts.chart('container', {
-		chart: {
-				type: 'spline',
-				marginRight: 10,
-		},
-		title: {
-				text: 'CPU Trend'
-		},
-		xAxis: {
-				type: 'datetime',
-				tickPixelInterval: 150
-		},
-		yAxis: {
-				title: {
-						text: null
-				}
-		},
-		tooltip: {
-				formatter: function () {
-						return '<b>' + this.series.name + '</b><br/>' +
-								Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-								Highcharts.numberFormat(this.y, 2);
-				}
-		},
-		legend: {
-				enabled: false
-		},
-		series: [{
-				name: 'CPU',
-				data: [0]
-		}]
-    });
-
-    function GetCpu(){
-        var cc = "";
-        window.share.Cpu(function(res){
-            cc = res;
-            updateCpu(cc);
-        });
-    }
-
-
-    function stopIt(){
-        setTimeout(function(){clearInterval(it);}, 1000);
-    }
-
-    function monitor(){
-        it = setInterval(function(){GetCpu()}, 5000);
-        <!--setTimeout(stopIt, 20000);-->
-    }
-
-    function updateCpu(cc){
-        cpu.push(parseInt(cc));
-        <!--alert(cpu);-->
-        chart.series[0].update({data:cpu});
-    }
-</script>
+<div id="container" style="min-width:600px;height:300px"></div>
+<script src="./monkey.js"></script>
 </body>
 </html>

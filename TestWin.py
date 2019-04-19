@@ -15,6 +15,8 @@ class GetStat:
         self.acpu = 0
         self.amem = 0
         self.mem = 0
+        self.vss = 0
+        self.rss = 0
 
     def run(self, app):
         # p = os.popen('adb shell top -m 1 -n 1 -t | grep System')
@@ -29,7 +31,7 @@ class GetStat:
         system = b[1].strip().split(' ')[1].replace('%', '')
         try:
             self.cpu = float(user) + float(system)
-            print('cpu:'+str(self.cpu))
+            # print('cpu:'+str(self.cpu))
         except Exception as e:
             pass
         if app.strip():
@@ -37,9 +39,11 @@ class GetStat:
                 a1 = p.readline().strip()
                 b1 = a1.split()[4]
                 self.acpu = float(b1.strip().replace('%', ''))
+                self.vss = float(int(a1.split()[7].strip().replace('K', ''))/1024)
+                self.rss = float(int(a1.split()[8].strip().replace('K', ''))/1024)
             except Exception as e:
                 pass
-            print('acpu:'+str(self.acpu))
+            # print('acpu:'+str(self.acpu))
 
         # p2 = os.popen('adb shell dumpsys meminfo|grep  -e calculator -e "Total RAM"')
         # a2 = p2.readline().strip().split()
@@ -95,7 +99,7 @@ class MyShareObject(QWidget):
 
     @pyqtSlot(str, result=list)
     def Cpu(self, app):
-        print('CPU')
+        # print('CPU')
         # thd = MyThread()
         # ti = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         # print(ti)
@@ -108,7 +112,7 @@ class MyShareObject(QWidget):
         # return str(c)
         g = GetStat()
         g.run(app)
-        return [str(g.cpu), str(g.acpu)]
+        return [str(g.cpu), str(g.acpu), str(g.vss), str(g.rss)]
 
 
 class MainWindow(QMainWindow):

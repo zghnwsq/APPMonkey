@@ -5,31 +5,42 @@
     <title>Monkey</title>
     <style type="text/css">
         table#input {
-            width:50%;
-            margin-left: 20%;
+            width:100%;
+            margin-left: 20px;
         }
         tr.row {
             width:100%;
             margin:10px;
+            height: 65px;
         }
         .row td{
-           width:30%;
+           <!--width:30%;-->
         }
         div.button {
             width:50%;
             margin-left: 60%;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
         button{
             margin-left: 20px;
         }
         #other {
-            height: 1em;
-            width: 100%;
+            height: 2em;
+            width: 90%;
+        }
+        #help {
+            font-size: 12px;
+        }
+        #help div span{
+            margin-left: 20px;
+
         }
     </style>
     <script type="text/javascript" src="./qwebchannel.js"></script>
     <script src="https://img.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script src="https://img.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+    <script src="http://cdn.hcharts.cn/highcharts/modules/offline-exporting.js"></script>
     <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
@@ -40,6 +51,33 @@
     <tr class="row">
         <td><span>包 名: </span><input type="text" id="package" value="com.miui.calculator"></td>
         <td><span>seed: </span><input type="text" id="seed" value="23"></td>
+        <td id="help"  rowspan="6">
+            <div>usage: monkey [-p ALLOWED_PACKAGE [-p ALLOWED_PACKAGE] ...]</div>
+            <div>              [-c MAIN_CATEGORY [-c MAIN_CATEGORY] ...]</div>
+            <div>              [--ignore-crashes] [--ignore-timeouts]</div>
+            <div>              [--ignore-security-exceptions]</div>
+            <div>              [--monitor-native-crashes] [--ignore-native-crashes]</div>
+            <div>              [--kill-process-after-error] [--hprof]</div>
+            <div>              [--pct-touch PERCENT] [--pct-motion PERCENT]</div>
+            <div>              [--pct-trackball PERCENT] [--pct-syskeys PERCENT]</div>
+            <div>              [--pct-nav PERCENT] [--pct-majornav PERCENT]</div>
+            <div>              [--pct-appswitch PERCENT] [--pct-flip PERCENT]</div>
+            <div>              [--pct-anyevent PERCENT] [--pct-pinchzoom PERCENT]</div>
+            <div>              [--pct-permission PERCENT]</div>
+            <div>              [--pkg-blacklist-file PACKAGE_BLACKLIST_FILE]</div>
+            <div>              [--pkg-whitelist-file PACKAGE_WHITELIST_FILE]</div>
+            <div>              [--wait-dbg] [--dbg-no-events]</div>
+            <div>              [--setup scriptfile] [-f scriptfile [-f scriptfile] ...]</div>
+            <div>              [--port port]      <span>[-s SEED] [-v [-v] ...]</span></div>
+            <div>              [--throttle MILLISEC] [--randomize-throttle]</div>
+            <div>              [--profile-wait MILLISEC]</div>
+            <div>              [--device-sleep-time MILLISEC]</div>
+            <div>              [--randomize-script]</div>
+            <div>              [--script-log]  <span>[--bugreport]</span></div>
+            <div>              [--periodic-bugreport]</div>
+            <div>              [--permission-target-system]</div>
+            <div>              COUNT</div>
+        </td>
     </tr>
     <tr class="row">
         <td><span>延 迟: </span><input type="text" id="throttle" value="150"></td>
@@ -47,16 +85,17 @@
     </tr>
     <tr class="row">
         <td><span>touch: </span><input type="text" id="touch" value="30"></td>
-        <td><span>syskeys: </span><input type="text" id="syskeys" value="0"></td>
+        <td><span>motion: </span><input type="text" id="motion" value="10"></td>
     </tr>
     <tr class="row">
+        <td><span>syskeys: </span><input type="text" id="syskeys" value="0"></td>
         <td><span>appswitch: </span><input type="text" id="appswitch" value="0"></td>
     </tr>
     <tr class="row">
         <td><span>次 数: </span><input type="text" id="times" value="1000"></td>
     </tr>
     <tr>
-        <td><span>其 它: </span><textarea id="other"></textarea></td>
+        <td colspan="2"><div>其 它: </div><textarea id="other"></textarea></td>
     </tr>
     </tbody>
 </table>
@@ -66,6 +105,7 @@
     <button onclick="stopIt();">停止监控</button>
 </div>
 <div id="container" style="min-width:600px;height:300px"></div>
+<div id="mem" style="min-width:600px;height:300px"></div>
 <script src="./monkey.js"></script>
 </body>
 </html>

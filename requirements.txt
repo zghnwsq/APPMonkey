@@ -2,7 +2,7 @@ altgraph==0.16.1
 future==0.17.1
 macholib==1.11
 pefile==2019.4.14
-PyInstaller==3.6
+PyInstaller==5.13.1
 PyQt5==5.10
 PyQt5-sip==4.19.15
 pywin32-ctypes==0.2.0
